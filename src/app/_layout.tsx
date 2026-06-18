@@ -1,0 +1,18 @@
+import { Stack } from 'expo-router';
+
+export default function RootLayout() {
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="index" />
+      <Stack.Screen name="(auth)" />
+      <Stack.Screen name="(protected)" />
+      <Stack.Screen
+        name="modals"
+        options={{
+          presentation: 'transparentModal',
+          animation: 'fade',
+        }}
+      />
+    </Stack>
+  );
+}
