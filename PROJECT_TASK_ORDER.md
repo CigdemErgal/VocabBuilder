@@ -383,3 +383,54 @@ Buradan sonra adim adim bu dosyaya gore ilerleyecegiz.
 2. `DictionaryScreen` UI iskeletine baslamak
 3. Bottom tab gorunumunu Figma'ya yaklastirmak
 4. Auth ekranlarinda `react-hook-form` ve `yup` entegrasyonuna gecmek
+
+## 11. Gunluk Not - 22 Haziran 2026
+
+### Bugun tamamlananlar
+
+- `Redux Toolkit` temel auth akisi projeye baglandi.
+- `src/store/store.ts` olusturuldu.
+- `src/store/authSlice.ts` olusturuldu.
+- `App.tsx` icine `Provider` eklenerek store tum uygulamaya tanitildi.
+- `RootNavigator` artik Redux icindeki `isAuth` durumuna gore `AuthNavigator` ve `HomeNavigator` arasinda secim yapiyor.
+- `LoginScreen` icinde `dispatch(login())` calisir hale getirildi.
+- `RegisterScreen` icinde `dispatch(login())` calisir hale getirildi.
+- Basarili login ve register sonrasinda kullanici `DictionaryScreen` ekranina gecebilir hale geldi.
+- `DictionaryScreen` icin ilk app-ici iskelet kuruldu.
+- `DictionaryScreen` header yapisi Figma'ya yaklastirildi.
+- Header icin logo, kullanici alani ve hamburger menu yerlesimi uzerinde calisildi.
+- `DictionaryScreen` icinde acilir menu mantigi baslatildi.
+- `Recommend` ve `Training` ekranlarina menu uzerinden navigation mantigi hazirlandi.
+- `Log out` davranisi Redux `logout()` aksiyonuna baglandi.
+
+### Bugun netlesen kararlar
+
+- Header'da birlesik `Craftwork.png` yerine parcali yapi mantigi tercih edildi:
+  - logo icon
+  - `VocabBuilder` metni
+  - `Iryna`
+  - user icon
+  - hamburger menu
+- Header sag blogunda bosluk mantigi netlesti:
+  - `Iryna -> user icon` = `8px`
+  - `user icon -> hamburger` = `16px`
+- `DictionaryScreen` icin kullanilan dogru dosya yolunun `src/screens/app/DictionaryScreen.tsx` oldugu netlestirildi.
+- Projede ayni isimli fazladan ekran dosyalari oldugu icin bundan sonra dosya yolu kontrolu daha dikkatli yapilacak.
+
+### Halen devam eden / tamamlanmayan kisimlar
+
+- `DictionaryScreen` header gorunumu son piksel duzeyinde hala ince ayar isteyebilir.
+- `DictionaryScreen` burger menu paneli henuz Figma'daki son yan panel gorunumune tam ulasmadi.
+- Alt tab ikonlari henuz Figma'daki son haline cekilmedi.
+- `DictionaryScreen` icerigi henuz sadece placeholder asamasinda.
+- `react-hook-form` ve `yup` henuz auth ekranlarina baglanmadi.
+- Gercek backend login/register entegrasyonu henuz yapilmadi.
+- Token saklama ve oturum kaliciligi henuz eklenmedi.
+
+### Bir sonraki mantikli adimlar
+
+1. `DictionaryScreen` header ve menu panelini Figma ile tamamen hizalamak
+2. Bottom tab ikonlarini ve aktif durumlarini tasarima yaklastirmak
+3. `DictionaryScreen` icinde search, categories, statistics ve ust dashboard iskeletini kurmak
+4. Auth ekranlarinda `react-hook-form` ve `yup` entegrasyonuna gecmek
+5. Sonraki asamada gercek API ve token akisina baslamak
