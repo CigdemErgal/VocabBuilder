@@ -2,6 +2,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useState } from "react";
 
 import {
+  Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -16,17 +17,34 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import type { AuthStackParamList } from "../../navigation/AuthNavigator";
 import { colors, spacing } from "../../constants/theme";
+import { useDispatch } from "react-redux";
+import { login } from "../../store/authSlice";
 
 type Props = NativeStackScreenProps<AuthStackParamList, "Register">;
 
 export default function RegisterScreen({ navigation }: Props) {
   const [isPasswordHidden, setIsPasswordHidden] = useState(true);
+  const dispatch = useDispatch();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleRegister = () => {
-    //sonra backend baglaninca buraya register logic'i gelecek.
+    const trimmedName = name.trim();
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
+
+    if (!trimmedName || !trimmedEmail || !trimmedPassword) {
+      Alert.alert("Error", "Please fill out all fields.");
+      return;
+    }
+
+    if (!trimmedEmail.includes("@")) {
+      Alert.alert("Error", "Please enter a valid email address.");
+      return;
+    }
+
+    dispatch(login());
   };
 
   return (

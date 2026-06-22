@@ -1,6 +1,7 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useState } from "react";
 import {
+  Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -15,16 +16,32 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import type { AuthStackParamList } from "../../navigation/AuthNavigator";
 import { colors, spacing } from "../../constants/theme";
+import { useDispatch } from "react-redux";
+import { login } from "../../store/authSlice";
 
 type Props = NativeStackScreenProps<AuthStackParamList, "Login">;
 
 export default function LoginScreen({ navigation }: Props) {
   const [isPasswordHidden, setIsPasswordHidden] = useState(true);
+  const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = () => {
-    //sonra backend baglaninca buraya login logic'i gelecek.
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
+
+    if (!trimmedEmail || !trimmedPassword) {
+      Alert.alert("Error", "Please enter both email and password.");
+      return;
+    }
+
+    if (!trimmedEmail.includes("@")) {
+      Alert.alert("Error", "Please enter a valid email address.");
+      return;
+    }
+
+    dispatch(login());
   };
 
   return (
