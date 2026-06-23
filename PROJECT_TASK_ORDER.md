@@ -434,3 +434,61 @@ Buradan sonra adim adim bu dosyaya gore ilerleyecegiz.
 3. `DictionaryScreen` icinde search, categories, statistics ve ust dashboard iskeletini kurmak
 4. Auth ekranlarinda `react-hook-form` ve `yup` entegrasyonuna gecmek
 5. Sonraki asamada gercek API ve token akisina baslamak
+
+## 12. Gunluk Not - 23 Haziran 2026
+
+### Bugun tamamlananlar
+
+- `DictionaryScreen` icin burger menu yapisi component mantigiyla netlestirildi.
+- `src/components/BurgerMenu.tsx` icinde menu acik hali uzerinde calisildi.
+- Burger menu icindeki `Dictionary`, `Recommend`, `Training` ve `Log out` satirlari duzenlendi.
+- `Log out` satirina sag ok ikonu eklendi.
+- Ok ikonunda gorunurluk sorunu incelendi ve PNG export kalitesinin sonucu etkiledigi netlesti.
+- Sag ok ikonu Figma'dan `2x` export edilerek daha dengeli hale getirildi.
+- Burger menu icindeki ilustrasyon yerlesimi uzerinde calisildi.
+- `DictionaryScreen` ile `BurgerMenu` ayrimi daha temiz hale getirildi.
+- `Dictionary` ekraninin Figma okumasi netlestirildi:
+  - normal dictionary hali
+  - `verb` secilmis hali
+  - edit popup acik hali
+- `Dictionary` ekranini componentlere bolme karari alindi.
+- `src/components/dictionary/` altinda acilacak yeni dosya yapisi netlestirildi:
+  - `DictionaryHeader.tsx`
+  - `DictionaryFilters.tsx`
+  - `DictionaryActions.tsx`
+  - `WordsTable.tsx`
+  - `WordsPagination.tsx`
+  - `EditWordModal.tsx`
+- `DictionaryHeader.tsx` ve `DictionaryFilters.tsx` icin ilk kod iskeletleri hazirlanip yazilmaya baslandi.
+
+### Bugun netlesen kararlar
+
+- `DictionaryScreen` tek bir ekran olacak, ancak birden fazla gorunume sahip olacak:
+  - normal durum
+  - kategori `Verb` secilmis durum
+  - edit popup acik durum
+- Figma'da yan yana duran tum mobil kartlar ayri screen olarak yorumlanmayacak.
+- `WordsPagination` alani ayri screen degil, `DictionaryScreen` icindeki alt kontrol bolumu olacak.
+- `BurgerMenu` ayri bir component olarak kalacak, `dictionary` alt klasorune tasinmayacak.
+- Burger menu ilustrasyonu piksel piksel birebir olmak zorunda degil; genel his ve yerlesim yeterince yakin oldugu surece kabul edilebilir.
+
+### Halen devam eden / tamamlanmayan kisimlar
+
+- `DictionaryHeader.tsx` ile `DictionaryScreen` entegrasyonu tamamlanmadi.
+- `DictionaryFilters.tsx` ile `DictionaryScreen` entegrasyonu tamamlanmadi.
+- `DictionaryActions.tsx` henuz yazilmadi.
+- `WordsTable.tsx` henuz yazilmadi.
+- `WordsPagination.tsx` henuz yazilmadi.
+- `EditWordModal.tsx` henuz yazilmadi.
+- `DictionaryScreen` halen tam Figma akisina gore parcali componentlerle birlestirilmedi.
+- `Verb` secilince radio button gosterme davranisi henuz ekran ustunde gercek baglantiya kavusmadi.
+- Tablodaki `Edit/Delete` aksiyonlari henuz component seviyesinde kurulmedi.
+
+### Bir sonraki mantikli adimlar
+
+1. `DictionaryHeader.tsx` componentini `DictionaryScreen` icine baglamak
+2. `DictionaryFilters.tsx` componentini `DictionaryScreen` icine baglamak
+3. `DictionaryActions.tsx` olusturmak
+4. `WordsTable.tsx` statik iskeletini kurmak
+5. `WordsPagination.tsx` statik iskeletini kurmak
+6. Sonrasinda `EditWordModal.tsx` ile popup duzenini eklemek
