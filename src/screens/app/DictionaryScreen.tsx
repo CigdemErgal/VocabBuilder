@@ -4,6 +4,7 @@ import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { useDispatch } from "react-redux";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import BurgerMenu from "../../components/BurgerMenu";
 import { colors, spacing } from "../../constants/theme";
 import type { BottomTabParamList } from "../../navigation/BottomTabNavigator";
 import { logout } from "../../store/authSlice";
@@ -33,6 +34,7 @@ export default function DictionaryScreen({ navigation }: Props) {
 
           <View style={styles.headerRight}>
             <Text style={styles.userName}>Iryna</Text>
+
             <View style={styles.userIconWrapper}>
               <Image
                 source={require("../../../assets/user-icon.png")}
@@ -52,50 +54,22 @@ export default function DictionaryScreen({ navigation }: Props) {
         </View>
 
         {isMenuOpen && (
-          <View style={styles.menuPanel}>
-            <Pressable
-              onPress={() => setIsMenuOpen(false)}
-              style={styles.menuItemButton}
-            >
-              <Text style={styles.activeMenuItem}>Dictionary</Text>
-            </Pressable>
-
-            <Pressable
-              onPress={() => {
-                setIsMenuOpen(false);
-                navigation.navigate("Recommend");
-              }}
-              style={styles.menuItemButton}
-            >
-              <Text style={styles.menuItem}>Recommend</Text>
-            </Pressable>
-
-            <Pressable
-              onPress={() => {
-                setIsMenuOpen(false);
-                navigation.navigate("Training");
-              }}
-              style={styles.menuItemButton}
-            >
-              <Text style={styles.menuItem}>Training</Text>
-            </Pressable>
-
-            <Pressable
-              onPress={() => {
-                setIsMenuOpen(false);
-                handleLogout();
-              }}
-              style={styles.menuItemButton}
-            >
-              <Text style={styles.menuItem}>Log out</Text>
-            </Pressable>
-
-            <Image
-              source={require("../../../assets/illustration.png")}
-              style={styles.menuIllustration}
-              resizeMode="contain"
-            />
-          </View>
+          <BurgerMenu
+            onClose={() => setIsMenuOpen(false)}
+            onDictionaryPress={() => setIsMenuOpen(false)}
+            onRecommendPress={() => {
+              setIsMenuOpen(false);
+              navigation.navigate("Recommend");
+            }}
+            onTrainingPress={() => {
+              setIsMenuOpen(false);
+              navigation.navigate("Training");
+            }}
+            onLogoutPress={() => {
+              setIsMenuOpen(false);
+              handleLogout();
+            }}
+          />
         )}
 
         <View style={styles.content}>
@@ -132,7 +106,7 @@ const styles = StyleSheet.create({
   logoIcon: {
     width: 36,
     height: 36,
-    marginRight: 16,
+    marginRight: 12,
   },
   logoText: {
     fontSize: 18,
@@ -143,7 +117,6 @@ const styles = StyleSheet.create({
   headerRight: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 16,
   },
   userName: {
     fontSize: 16,
@@ -161,50 +134,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginRight: 16,
   },
-
   userIcon: {
-    width: 24,
-    height: 24,
-    color: colors.white,
+    width: 18,
+    height: 18,
   },
   menuImage: {
-    width: 32,
-    height: 22,
-  },
-  menuPanel: {
-    position: "absolute",
-    top: 0,
-    right: 0,
-    width: 165,
-    minHeight: 300,
-    backgroundColor: colors.brand,
-    borderRadius: 16,
-    paddingTop: spacing.lg,
-    paddingHorizontal: spacing.md,
-    paddingBottom: spacing.md,
-    zIndex: 10,
-  },
-  menuItemButton: {
-    marginBottom: spacing.md,
-  },
-  activeMenuItem: {
-    fontSize: 16,
-    color: colors.text,
-    backgroundColor: colors.white,
-    borderRadius: 20,
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    alignSelf: "flex-start",
-  },
-  menuItem: {
-    fontSize: 16,
-    color: colors.white,
-  },
-  menuIllustration: {
-    width: 110,
-    height: 110,
-    alignSelf: "center",
-    marginTop: spacing.lg,
+    width: 24,
+    height: 24,
   },
   content: {
     flex: 1,
