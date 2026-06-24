@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 import { colors, spacing } from "../../constants/theme";
@@ -5,11 +6,27 @@ import { colors, spacing } from "../../constants/theme";
 type DictionaryFiltersProps = {
   selectedCategory?: string;
 };
+const categories = [
+  "Verb",
+  "Participle",
+  "Noun",
+  "Adjective",
+  "Pronoun",
+  "Numerals",
+  "Adverb",
+  "Preposition",
+  "Conjunction",
+  "Phrasal verb",
+  "Functional phrase",
+];
 
 export default function DictionaryFilters({
   selectedCategory = "Categories",
 }: DictionaryFiltersProps) {
-  const isVerbSelected = selectedCategory === "Verb";
+  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+  const [currentCategory, setCurrentCategory] = useState(selectedCategory);
+
+  const isVerbSelected = currentCategory === "Verb";
 
   return (
     <View style={styles.wrapper}>
@@ -22,14 +39,34 @@ export default function DictionaryFilters({
         />
       </View>
 
-      <Pressable style={styles.inputBox}>
-        <Text style={styles.inputText}>{selectedCategory}</Text>
+      <Pressable
+        style={styles.inputBox}
+        onPress={() => setIsCategoryOpen(!isCategoryOpen)}
+      >
+        <Text style={styles.inputText}>{currentCategory}</Text>
         <Image
           source={require("../../../assets/edit-01.png")}
-          style={styles.chevronIcon}
+          style={[styles.chevronIcon, isCategoryOpen && styles.chevronIconOpen]}
           resizeMode="contain"
         />
       </Pressable>
+
+      {isCategoryOpen && (
+        <View style={styles.dropdown}>
+          {categories.map((item) => (
+            <Pressable
+              key={item}
+              style={styles.dropdownItem}
+              onPress={() => {
+                setCurrentCategory(item);
+                setIsCategoryOpen(false);
+              }}
+            >
+              <Text style={styles.dropdownText}>{item}</Text>
+            </Pressable>
+          ))}
+        </View>
+      )}
 
       {isVerbSelected && (
         <View style={styles.radioRow}>
@@ -53,6 +90,7 @@ export default function DictionaryFilters({
 const styles = StyleSheet.create({
   wrapper: {
     marginBottom: spacing.lg,
+    zIndex: 20,
   },
   inputBox: {
     height: 48,
@@ -74,10 +112,29 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
   },
+  dropdown: {
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 15,
+    backgroundColor: colors.white,
+    paddingVertical: 8,
+    marginBottom: 8,
+  },
+  dropdownItem: {
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+  },
+  dropdownText: {
+    fontSize: 16,
+    color: colors.text,
+  },
   chevronIcon: {
     width: 20,
     height: 20,
     transform: [{ rotate: "90deg" }],
+  },
+  chevronIconOpen: {
+    transform: [{ rotate: "-90deg" }],
   },
   radioRow: {
     flexDirection: "row",

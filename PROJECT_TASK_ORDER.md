@@ -492,3 +492,63 @@ Buradan sonra adim adim bu dosyaya gore ilerleyecegiz.
 4. `WordsTable.tsx` statik iskeletini kurmak
 5. `WordsPagination.tsx` statik iskeletini kurmak
 6. Sonrasinda `EditWordModal.tsx` ile popup duzenini eklemek
+
+## 13. Gunluk Not - 24 Haziran 2026
+
+### Bugun tamamlananlar
+
+- `DictionaryScreen` icindeki bolumlerin Figma karsiliklari daha net cozuldu.
+- `Find the word` ve `Categories` alanlarinin `DictionaryFilters` componentine ait oldugu netlestirildi.
+- `To study`, `Add word` ve `Train oneself` satirinin `DictionaryActions` componentine ait oldugu netlestirildi.
+- `src/components/dictionary/DictionaryFilters.tsx` icinde kategori acilir liste mantigi kuruldu.
+- Kategori listesine Figma'daki secenekler eklendi:
+  - `Verb`
+  - `Participle`
+  - `Noun`
+  - `Adjective`
+  - `Pronoun`
+  - `Numerals`
+  - `Adverb`
+  - `Preposition`
+  - `Conjunction`
+  - `Phrasal verb`
+  - `Functional phrase`
+- `Verb` secildiginde radio seceneklerini gosterme mantigi baslatildi.
+- `DictionaryActions.tsx` yapisi uzerinde calisilmaya baslandi.
+- Burger menu gorseli tekrar duzenlendi.
+- `Log out` satirindaki sag ok ikonu icin daha net PNG export kullanildi.
+- Figma'daki mobil kartlarin ayri ekran degil, ayni ekranin farkli durumlari oldugu tekrar netlestirildi.
+
+### Bugun netlesen kararlar
+
+- `DictionaryScreen` once statik componentler halinde tamamlanacak.
+- Sonra bu componentlere davranis eklenecek.
+- Burger menu acikken arkadaki filtrelerin ustune gelmesi beklenen davranistir.
+- Illustration yerlesiminde birebir piksel zorunlulugu yerine genel Figma hissi korunacak.
+- Dictionary tarafinda once:
+  1. `DictionaryHeader`
+  2. `DictionaryFilters`
+  3. `DictionaryActions`
+  4. `WordsTable`
+  5. `WordsPagination`
+  6. `EditWordModal`
+  sirasiyla ilerlenecek.
+
+### Halen devam eden / tamamlanmayan kisimlar
+
+- `DictionaryScreen` icinde `DictionaryHeader`, `DictionaryFilters` ve `DictionaryActions` entegrasyonu tamamen toparlanmadi.
+- `Find the word` alani henuz gercek `TextInput` davranisina baglanmadi.
+- `Categories` alaninda son stil ve icon duzeltmeleri gerekebilir.
+- `DictionaryActions.tsx` henuz tamamlanmadi.
+- `WordsTable.tsx` henuz yazilmadi.
+- `WordsPagination.tsx` henuz yazilmadi.
+- `EditWordModal.tsx` henuz yazilmadi.
+- Dictionary ekrani henuz tam Figma akisina gore tek parca olarak tamamlanmadi.
+
+### Bir sonraki mantikli adimlar
+
+1. `DictionaryActions.tsx` componentini tamamlamak
+2. `DictionaryScreen` icinde `DictionaryHeader + DictionaryFilters + DictionaryActions` baglantisini temizlemek
+3. `WordsTable.tsx` statik iskeletini kurmak
+4. `WordsPagination.tsx` statik iskeletini kurmak
+5. Sonrasinda `EditWordModal.tsx` ile edit popup akisina gecmek
