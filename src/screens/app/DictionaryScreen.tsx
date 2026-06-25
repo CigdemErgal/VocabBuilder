@@ -22,7 +22,7 @@ export default function DictionaryScreen({ navigation }: Props) {
     dispatch(logout());
   };
   const handleAddWord = () => {
-    navigation.navigate("Recommend");
+    navigation.getParent()?.navigate("AddWord" as never);
   };
 
   const handleTrain = () => {

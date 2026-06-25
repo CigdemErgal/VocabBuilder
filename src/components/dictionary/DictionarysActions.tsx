@@ -38,20 +38,20 @@ export default function DictionaryActions({
 
 const styles = StyleSheet.create({
   wrapper: {
-    marginBottom: spacing.lg,
+    marginTop: spacing.lg,
   },
   studyRow: {
     flexDirection: "row",
-    alignItems: "baseline",
+    alignItems: "center",
     marginBottom: spacing.md,
   },
   studyLabel: {
-    fontSize: 16,
+    fontSize: 14,
     color: colors.textMuted,
     marginRight: 8,
   },
   studyCount: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: "700",
     color: colors.text,
   },
@@ -62,21 +62,20 @@ const styles = StyleSheet.create({
   actionButton: {
     flexDirection: "row",
     alignItems: "center",
-    marginRight: 16,
+    marginRight: spacing.lg,
   },
   actionText: {
     fontSize: 16,
     color: colors.text,
-    marginRight: 8,
   },
   plusText: {
+    marginLeft: 8,
     fontSize: 20,
     color: colors.brand,
-    lineHeight: 20,
   },
   arrowIcon: {
     width: 16,
     height: 16,
-    tintColor: colors.brand,
+    marginLeft: 8,
   },
 });

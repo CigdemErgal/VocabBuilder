@@ -552,3 +552,59 @@ Buradan sonra adim adim bu dosyaya gore ilerleyecegiz.
 3. `WordsTable.tsx` statik iskeletini kurmak
 4. `WordsPagination.tsx` statik iskeletini kurmak
 5. Sonrasinda `EditWordModal.tsx` ile edit popup akisina gecmek
+
+## 14. Gunluk Not - 25 Haziran 2026
+
+### Bugun tamamlananlar
+
+- `DictionaryScreen` icin mevcut emulator goruntusu ile Figma tekrar karsilastirildi.
+- Figma'daki yan yana mobil kartlarin ayri sayfalar degil, ayni ekranin farkli durumlari oldugu tekrar netlestirildi.
+- `DictionaryFilters` icindeki kategori acilir liste yapisi ekranda gorunur hale getirildi.
+- `Categories` listesi icin Figma'daki secenekler yeniden kontrol edildi:
+  - `Verb`
+  - `Participle`
+  - `Noun`
+  - `Adjective`
+  - `Pronoun`
+  - `Numerals`
+  - `Adverb`
+  - `Preposition`
+  - `Conjunction`
+  - `Phrasal verb`
+  - `Functional phrase`
+- `DictionaryActions.tsx` icindeki `Add word` alani ile `DictionaryScreen` arasindaki baglanti yeniden netlestirildi.
+- `BurgerMenu` ve `Log out` satiri uzerindeki gorsel duzen tekrar gozden gecirildi.
+- `Log out` satirindaki sag ok ikonu icin daha net PNG export kullanildi.
+
+### Bugun netlesen kararlar
+
+- `DictionaryScreen` icin Figma'da gordugumuz kartlarin bir kismi ayri ekran degil, ayni ekranin farkli state goruntuleridir.
+- `DictionaryScreen` tarafinda ilerleme sirasini degistirmiyoruz:
+  1. `DictionaryHeader`
+  2. `DictionaryFilters`
+  3. `DictionaryActions`
+  4. `WordsTable`
+  5. `WordsPagination`
+  6. `EditWordModal`
+- `WordsTable` kismina gecmeden once `DictionaryFilters` ve `DictionaryActions` akisinin daha temiz hale getirilmesi gerekiyor.
+- `AddWord` ayri bir ekran olarak ele alinacak.
+- UI tarafinda Turkish icerik dusunulecek, ancak backend alan adlari `en` ve `ua` olarak korunacak.
+
+### Halen devam eden / tamamlanmayan kisimlar
+
+- `DictionaryScreen` icinde `DictionaryFilters` son davranis ve stil olarak tamamlanmadi.
+- `Categories` acilir liste gorunuyor, ancak son duzen ve etkilesimler halen net degil.
+- `DictionaryActions.tsx` icindeki `Add word` ve `Train oneself` akislarinda navigator baglantisi tamamlanmadi.
+- `AddWord` ekranina gecis halen hata uretebiliyor ya da tam baglanmamis durumda olabilir.
+- `WordsTable.tsx` henuz tamamlanmadi.
+- `WordsPagination.tsx` henuz tamamlanmadi.
+- `EditWordModal.tsx` henuz tamamlanmadi.
+- `DictionaryScreen` halen Figma'daki ana ekranin tam karsiligi haline gelmedi.
+
+### Bir sonraki mantikli adimlar
+
+1. `DictionaryActions.tsx` icindeki `Add word` yonlendirmesini navigator yapisiyla uyumlu hale getirmek
+2. `AddWord` ekraninin navigator icindeki yerini tekrar netlestirmek ve hatayi kapatmak
+3. `DictionaryScreen` icinde `DictionaryFilters + DictionaryActions` bolumlerini temizlemek
+4. Sonrasinda `WordsTable.tsx` statik iskeletini kurmak
+5. Ardindan `WordsPagination.tsx` bolumune gecmek

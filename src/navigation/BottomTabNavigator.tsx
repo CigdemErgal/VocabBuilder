@@ -3,11 +3,12 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import DictionaryScreen from "../screens/app/DictionaryScreen";
 import RecommendScreen from "../screens/app/RecommendScreen";
 import TrainingScreen from "../screens/app/TrainingScreen";
-
+import AddWordScreen from "../screens/app/AddWordScreen";
 export type BottomTabParamList = {
   Dictionary: undefined;
   Recommend: undefined;
   Training: undefined;
+  AddWord: undefined;
 };
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
