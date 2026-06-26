@@ -7,6 +7,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import BurgerMenu from "../../components/BurgerMenu";
 import DictionaryActions from "../../components/dictionary/DictionarysActions";
 import DictionaryFilters from "../../components/dictionary/DictionaryFilters";
+import WordsTable from "../../components/dictionary/WordsTable";
 import DictionaryHeader from "../../components/dictionary/DictionaryHeader";
 import { colors, spacing } from "../../constants/theme";
 import type { BottomTabParamList } from "../../navigation/BottomTabNavigator";
@@ -59,6 +60,7 @@ export default function DictionaryScreen({ navigation }: Props) {
             onAddWordPress={handleAddWord}
             onTrainPress={handleTrain}
           />
+          <WordsTable />
         </View>
       </View>
     </SafeAreaView>
