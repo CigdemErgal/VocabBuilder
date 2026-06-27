@@ -1,12 +1,15 @@
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+
 import { colors, spacing } from "../../constants/theme";
 
 type DictionaryActionsProps = {
+  studyCount: number;
   onAddWordPress: () => void;
   onTrainPress: () => void;
 };
 
 export default function DictionaryActions({
+  studyCount,
   onAddWordPress,
   onTrainPress,
 }: DictionaryActionsProps) {
@@ -14,7 +17,7 @@ export default function DictionaryActions({
     <View style={styles.wrapper}>
       <View style={styles.studyRow}>
         <Text style={styles.studyLabel}>To Study</Text>
-        <Text style={styles.studyCount}>20</Text>
+        <Text style={styles.studyCount}>{studyCount}</Text>
       </View>
 
       <View style={styles.actionsRow}>
@@ -58,11 +61,12 @@ const styles = StyleSheet.create({
   actionsRow: {
     flexDirection: "row",
     alignItems: "center",
+    flexWrap: "wrap",
+    gap: spacing.lg,
   },
   actionButton: {
     flexDirection: "row",
     alignItems: "center",
-    marginRight: spacing.lg,
   },
   actionText: {
     fontSize: 16,

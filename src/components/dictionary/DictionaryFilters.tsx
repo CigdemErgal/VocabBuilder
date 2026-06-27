@@ -1,86 +1,122 @@
 import { useState } from "react";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 
 import { colors, spacing } from "../../constants/theme";
+import { dictionaryCategories, verbTypeOptions } from "../../data/mockWords";
+import type { VerbType, WordCategory } from "../../types/word";
 
 type DictionaryFiltersProps = {
-  selectedCategory?: string;
+  searchValue: string;
+  selectedCategory: WordCategory | null;
+  selectedVerbType: VerbType;
+  onSearchChange: (value: string) => void;
+  onCategoryChange: (value: WordCategory | null) => void;
+  onVerbTypeChange: (value: VerbType) => void;
 };
-const categories = [
-  "Verb",
-  "Participle",
-  "Noun",
-  "Adjective",
-  "Pronoun",
-  "Numerals",
-  "Adverb",
-  "Preposition",
-  "Conjunction",
-  "Phrasal verb",
-  "Functional phrase",
-];
 
 export default function DictionaryFilters({
-  selectedCategory = "Categories",
+  searchValue,
+  selectedCategory,
+  selectedVerbType,
+  onSearchChange,
+  onCategoryChange,
+  onVerbTypeChange,
 }: DictionaryFiltersProps) {
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
-  const [currentCategory, setCurrentCategory] = useState(selectedCategory);
 
-  const isVerbSelected = currentCategory === "Verb";
+  const selectedLabel =
+    dictionaryCategories.find((item) => item.value === selectedCategory)
+      ?.label ?? "Categories";
+
+  const isVerbSelected = selectedCategory === "verb";
 
   return (
     <View style={styles.wrapper}>
       <View style={styles.inputBox}>
-        <Text style={styles.inputText}>Find the word</Text>
+        <TextInput
+          placeholder="Find the word"
+          placeholderTextColor={colors.textMuted}
+          style={styles.searchInput}
+          value={searchValue}
+          onChangeText={onSearchChange}
+        />
         <Image
-          source={require("../../../assets/dictionary-icon.png")}
-          style={styles.searchIcon}
+          source={require("../../../assets/search.png")}
+          style={styles.icon}
           resizeMode="contain"
         />
       </View>
 
       <Pressable
         style={styles.inputBox}
-        onPress={() => setIsCategoryOpen(!isCategoryOpen)}
+        onPress={() => setIsCategoryOpen((prev) => !prev)}
       >
-        <Text style={styles.inputText}>{currentCategory}</Text>
+        <Text style={styles.selectText}>{selectedLabel}</Text>
         <Image
-          source={require("../../../assets/edit-01.png")}
-          style={[styles.chevronIcon, isCategoryOpen && styles.chevronIconOpen]}
+          source={require("../../../assets/down-arrow.png")}
+          style={[styles.icon, isCategoryOpen && styles.iconOpen]}
           resizeMode="contain"
         />
       </Pressable>
 
       {isCategoryOpen && (
         <View style={styles.dropdown}>
-          {categories.map((item) => (
-            <Pressable
-              key={item}
-              style={styles.dropdownItem}
-              onPress={() => {
-                setCurrentCategory(item);
-                setIsCategoryOpen(false);
-              }}
-            >
-              <Text style={styles.dropdownText}>{item}</Text>
-            </Pressable>
-          ))}
+          {dictionaryCategories.map((item) => {
+            const isActive = item.value === selectedCategory;
+
+            return (
+              <Pressable
+                key={item.value}
+                style={[
+                  styles.dropdownItem,
+                  isActive && styles.dropdownItemActive,
+                ]}
+                onPress={() => {
+                  onCategoryChange(item.value);
+                  setIsCategoryOpen(false);
+                }}
+              >
+                <Text
+                  style={[
+                    styles.dropdownText,
+                    isActive && styles.dropdownTextActive,
+                  ]}
+                >
+                  {item.label}
+                </Text>
+              </Pressable>
+            );
+          })}
         </View>
       )}
 
       {isVerbSelected && (
         <View style={styles.radioRow}>
-          <View style={styles.radioItem}>
-            <View style={styles.radioOuterActive}>
-              <View style={styles.radioInnerActive} />
-            </View>
-            <Text style={styles.radioText}>Regular</Text>
-          </View>
+          {verbTypeOptions.map((option) => {
+            const isActive = option.value === selectedVerbType;
 
-          <View style={styles.radioItem}>
-            <View style={styles.radioOuter} />
-            <Text style={styles.radioText}>Irregular</Text>
-          </View>
+            return (
+              <Pressable
+                key={option.value}
+                onPress={() => onVerbTypeChange(option.value)}
+                style={styles.radioItem}
+              >
+                <View
+                  style={isActive ? styles.radioOuterActive : styles.radioOuter}
+                >
+                  {isActive ? <View style={styles.radioInnerActive} /> : null}
+                </View>
+                <Text style={styles.radioText}>{option.label}</Text>
+              </Pressable>
+            );
+          })}
         </View>
       )}
     </View>
@@ -93,58 +129,70 @@ const styles = StyleSheet.create({
     zIndex: 20,
   },
   inputBox: {
-    height: 48,
+    minHeight: 44,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: 15,
     backgroundColor: colors.white,
-    paddingHorizontal: 18,
+    paddingHorizontal: 16,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     marginBottom: 8,
   },
-  inputText: {
+  searchInput: {
+    flex: 1,
     fontSize: 16,
+    fontWeight: "400",
     color: colors.text,
   },
-  searchIcon: {
-    width: 20,
-    height: 20,
+  selectText: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: "400",
+    color: colors.text,
+  },
+  icon: {
+    width: 18,
+    height: 18,
+    tintColor: colors.text,
+  },
+  iconOpen: {
+    transform: [{ rotate: "180deg" }],
   },
   dropdown: {
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: 15,
     backgroundColor: colors.white,
-    paddingVertical: 8,
     marginBottom: 8,
+    overflow: "hidden",
   },
   dropdownItem: {
-    paddingVertical: 10,
-    paddingHorizontal: 18,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  },
+  dropdownItemActive: {
+    backgroundColor: "#F4F8F7",
   },
   dropdownText: {
     fontSize: 16,
     color: colors.text,
   },
-  chevronIcon: {
-    width: 20,
-    height: 20,
-    transform: [{ rotate: "90deg" }],
-  },
-  chevronIconOpen: {
-    transform: [{ rotate: "-90deg" }],
+  dropdownTextActive: {
+    color: colors.brand,
+    fontWeight: "600",
   },
   radioRow: {
     flexDirection: "row",
     alignItems: "center",
     marginTop: 6,
+    gap: spacing.md,
+    flexWrap: "wrap",
   },
   radioItem: {
     flexDirection: "row",
     alignItems: "center",
-    marginRight: 16,
   },
   radioOuterActive: {
     width: 18,
@@ -172,6 +220,7 @@ const styles = StyleSheet.create({
   },
   radioText: {
     fontSize: 14,
+    fontWeight: "400",
     color: colors.text,
   },
 });

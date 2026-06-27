@@ -1,16 +1,24 @@
 # VocabBuilder
 
-React Native ve Expo ile geliştirilen kelime ezberleme uygulaması.
+Expo SDK 56 ile gelistirilmis bir kelime calisma uygulamasi.
 
-## Mevcut yapı
+## Neler Hazir
 
-- `App.tsx`: uygulama giriş noktası
-- `src/navigation`: React Navigation yapısı
-- `src/screens`: ekran dosyaları
-- `src/constants`: tema ve sabitler
-- `assets`: kullanılan görseller
+- Auth akisi: `Splash`, `Login`, `Register`
+- Yetkili alan: `Dictionary`, `Recommend`, `Training`
+- `Dictionary` ekraninda arama, kategori filtreleme, verb type secimi, tablo, pagination, edit modal
+- `Add Word` ekrani icin calisan form iskeleti
+- `Recommend` ve `Training` ekranlari icin gercek gorunumlu demo akislari
 
-## Çalıştırma
+## Teknoloji
+
+- Expo `~56.0.12`
+- React Native `0.85.3`
+- React Navigation
+- Redux Toolkit
+- TypeScript
+
+## Calistirma
 
 ```bash
 npm install
@@ -19,6 +27,6 @@ npx expo start
 
 ## Notlar
 
-- Navigation için `React Navigation` kullanılıyor.
-- Eski `expo-router` yapısı projeden kaldırıldı.
-- Çalışma planı için `PROJECT_TASK_ORDER.md` dosyasını kullanıyoruz.
+- Projede su an backend yerine demo veri kullaniliyor.
+- Proje plani ve gunluk notlar `PROJECT_TASK_ORDER.md` icinde tutuluyor.
+- Expo ile ilgili uygulama kararlarinda `https://docs.expo.dev/versions/v56.0.0/` referans alinmistir.
