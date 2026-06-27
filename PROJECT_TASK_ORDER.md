@@ -608,3 +608,45 @@ Buradan sonra adim adim bu dosyaya gore ilerleyecegiz.
 3. `DictionaryScreen` icinde `DictionaryFilters + DictionaryActions` bolumlerini temizlemek
 4. Sonrasinda `WordsTable.tsx` statik iskeletini kurmak
 5. Ardindan `WordsPagination.tsx` bolumune gecmek
+
+## 15. Gunluk Not - 27 Haziran 2026
+
+### Bugun tamamlananlar
+
+- `DictionaryFilters.tsx` icindeki `Categories` alani button/chip gorunumunden cikarilip acilir liste mantigina yaklastirildi.
+- `Find the word` ve `Categories` alanlarinin text olculeri Figma'ya daha yakin hale getirildi.
+- `ProgressCircle` gorunumu tekrar ele alindi ve dictionary tablosundaki progress alani Figma'ya gore kontrol edildi.
+- `WordsTable.tsx` icinde kolon genislikleri, text boyutlari ve paddings mobil gorunume gore yeniden duzenlendi.
+- Dictionary tablosuna yatay ve dikey cizgi hissi veren border duzeni eklendi.
+- `Actions` kolonu icinde dogrudan gorunen `Edit / Delete` metinleri kaldirildi.
+- `...` butonuna basinca acilan minik popup menu kuruldu.
+- Popup menu icine `Edit` ve `Delete` aksiyonlari baglandi.
+- `Review` kolonu dictionary tablosundan tamamen kaldirildi.
+- `WordsTable.tsx` icindeki syntax hatasi temizlenip dosya tekrar stabil hale getirildi.
+- Backend Swagger dokumani kontrol edildi.
+- `src/api/client.ts` icinde temel `axios` client yapisi ve auth header yardimcilari uzerinde calisilmaya baslandi.
+- `src/api/auth.ts` icinde auth endpointleri icin servis yapisi kurulmaya baslandi.
+- `src/store/authSlice.ts` dosyasinda backend entegrasyonu icin `createAsyncThunk` tabanli yeni auth akisi hazirlanmaya baslandi.
+
+### Bugun netlesen kararlar
+
+- Dictionary ekranindaki kategori secenekleri ilk acilista chip olarak degil, kapali dropdown mantigiyla gorunecek.
+- Dictionary tablosunda `Review` kolonu kullanilmayacak.
+- `Actions` alani Figma'daki gibi `...` uzerinden acilan kucuk popup ile calisacak.
+- Backend entegrasyonu egitici sekilde adim adim kurulacak; kodun tamami tek seferde yazilmayacak.
+- `api` klasoru sadece istek katmani icin kullanilacak, Redux slice dosyalari `store` altinda kalacak.
+
+### Halen devam eden / tamamlanmayan kisimlar
+
+- `authSlice.ts` dosyasi thunk tarafinda baslatildi ancak `createSlice`, `extraReducers` ve tam reducer akisi henuz tamamlanmadi.
+- `LoginScreen` ve `RegisterScreen` henuz gercek backend thunk'larina baglanmadi.
+- Token saklama ve oturum kaliciligi henuz tamamlanmadi.
+- Dictionary verileri halen mock veri ile calisiyor.
+- Word endpointleri icin servis ve state yapisi henuz kurulmedi.
+
+### Pazartesi ilk mantikli adimlar
+
+1. `authSlice.ts` icindeki `createSlice`, `extraReducers` ve `logout` akislarini tamamlamak
+2. `LoginScreen` ve `RegisterScreen` icinde `dispatch(login())` yerine gercek thunk cagirilari baglamak
+3. Token saklama ve `current user` akisini eklemek
+4. Sonrasinda word endpointlerini backend ile baglamaya baslamak
