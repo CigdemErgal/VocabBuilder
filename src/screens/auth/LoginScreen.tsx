@@ -16,32 +16,59 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import type { AuthStackParamList } from "../../navigation/AuthNavigator";
 import { colors, spacing } from "../../constants/theme";
-import { useDispatch } from "react-redux";
-import { login } from "../../store/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { loginThunk } from "../../store/authSlice";
+import type { AppDispatch, RootState } from "../../store/store";
+import { Controller, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 
 type Props = NativeStackScreenProps<AuthStackParamList, "Login">;
 
+type LoginFormData = {
+  email: string;
+  password: string;
+};
+
+const loginSchema = yup.object({
+  email: yup
+    .string()
+    .required("Email is required")
+    .email("Please enter a valid email address"),
+  password: yup
+    .string()
+    .required("Password is required")
+    .min(6, "Password must be at least 6 characters"),
+});
+
 export default function LoginScreen({ navigation }: Props) {
   const [isPasswordHidden, setIsPasswordHidden] = useState(true);
-  const dispatch = useDispatch();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const dispatch = useDispatch<AppDispatch>();
+  const { isLoading, error } = useSelector((state: RootState) => state.auth);
 
-  const handleLogin = () => {
-    const trimmedEmail = email.trim();
-    const trimmedPassword = password.trim();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    resolver: yupResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
 
-    if (!trimmedEmail || !trimmedPassword) {
-      Alert.alert("Error", "Please enter both email and password.");
-      return;
+  const handleLogin = async (formData: LoginFormData) => {
+    try {
+      await dispatch(
+        loginThunk({
+          email: formData.email.trim(),
+          password: formData.password.trim(),
+        }),
+      ).unwrap();
+    } catch (error) {
+      Alert.alert("Login failed", String(error));
     }
-
-    if (!trimmedEmail.includes("@")) {
-      Alert.alert("Error", "Please enter a valid email address.");
-      return;
-    }
-
-    dispatch(login());
   };
 
   return (
@@ -71,49 +98,74 @@ export default function LoginScreen({ navigation }: Props) {
                 Please enter your login details to continue using our service:
               </Text>
 
-              <TextInput
-                placeholder="Email"
-                style={styles.input}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoCorrect={false}
-                value={email}
-                onChangeText={setEmail}
+              <Controller
+                control={control}
+                name="email"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <TextInput
+                    placeholder="Email"
+                    style={styles.input}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                  />
+                )}
+              />
+              {errors.email ? (
+                <Text style={styles.errorText}>{errors.email.message}</Text>
+              ) : null}
+
+              <Controller
+                control={control}
+                name="password"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <View style={styles.passwordWrapper}>
+                    <TextInput
+                      placeholder="Password"
+                      secureTextEntry={isPasswordHidden}
+                      style={styles.passwordInput}
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      value={value}
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                    />
+
+                    <Pressable
+                      onPress={() => setIsPasswordHidden(!isPasswordHidden)}
+                    >
+                      <Image
+                        source={
+                          isPasswordHidden
+                            ? require("../../../assets/eye-off.png")
+                            : require("../../../assets/eye.png")
+                        }
+                        style={styles.eyeIcon}
+                      />
+                    </Pressable>
+                  </View>
+                )}
               />
 
-              <View style={styles.passwordWrapper}>
-                <TextInput
-                  placeholder="Password"
-                  secureTextEntry={isPasswordHidden}
-                  style={styles.passwordInput}
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  value={password}
-                  onChangeText={setPassword}
-                />
+              {errors.password ? (
+                <Text style={styles.errorText}>{errors.password.message}</Text>
+              ) : null}
 
-                <Pressable
-                  onPress={() => setIsPasswordHidden(!isPasswordHidden)}
-                >
-                  <Image
-                    source={
-                      isPasswordHidden
-                        ? require("../../../assets/eye-off.png")
-                        : require("../../../assets/eye.png")
-                    }
-                    style={styles.eyeIcon}
-                  />
-                </Pressable>
-              </View>
+              {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
               <Pressable
-                onPress={handleLogin}
+                onPress={handleSubmit(handleLogin)}
                 style={({ pressed }) => [
                   styles.primaryButton,
                   pressed && { opacity: 0.8 },
                 ]}
               >
-                <Text style={styles.primaryButtonText}>Login</Text>
+                <Text style={styles.primaryButtonText}>
+                  {isLoading ? "Loading..." : "Login"}
+                </Text>
               </Pressable>
 
               <Pressable onPress={() => navigation.navigate("Register")}>
@@ -128,6 +180,11 @@ export default function LoginScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
+  errorText: {
+    color: "#D80027",
+    fontSize: 14,
+    marginBottom: spacing.sm,
+  },
   safeArea: {
     flex: 1,
     backgroundColor: colors.background,

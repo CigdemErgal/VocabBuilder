@@ -1,7 +1,8 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Alert,
+  Image,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -20,106 +21,200 @@ type Props = NativeStackScreenProps<HomeParamList, "AddWord">;
 
 export default function AddWordScreen({ navigation }: Props) {
   const [englishWord, setEnglishWord] = useState("");
-  const [turkishWord, setTurkishWord] = useState("");
+  const [translation, setTranslation] = useState("");
   const [category, setCategory] = useState<WordCategory>("verb");
   const [verbType, setVerbType] = useState<VerbType>("regular");
+  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+
+  const selectedCategoryLabel = useMemo(() => {
+    return (
+      dictionaryCategories.find((item) => item.value === category)?.label ??
+      "Choose category"
+    );
+  }, [category]);
 
   const handleSubmit = () => {
-    if (!englishWord.trim() || !turkishWord.trim()) {
+    if (!englishWord.trim() || !translation.trim()) {
       Alert.alert("Missing info", "Please fill in both word fields.");
       return;
     }
+    const newWord = {
+      id: Date.now().toString(),
+      word: englishWord.trim(),
+      translation: translation.trim(),
+      ua: translation.trim(),
+      category,
+      verbType: category === "verb" ? verbType : undefined,
+      progress: 0,
+      nextReview: "Today",
+    };
 
     Alert.alert("Added", "The word has been added to your dictionary.");
-    navigation.goBack();
+    navigation.navigate("HomeTabs", {
+      screen: "Dictionary",
+      params: {
+        newWord,
+      },
+    } as never);
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      <View style={styles.header}>
+        <Pressable
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
+          <Text style={styles.backText}>{"<"}</Text>
+        </Pressable>
+
+        <View style={styles.headerCenter}>
+          <View style={styles.userIconWrapper}>
+            <Image
+              source={require("../../../assets/user-icon.png")}
+              style={styles.userIcon}
+              resizeMode="contain"
+            />
+          </View>
+          <Text style={styles.userName}>Iryna</Text>
+        </View>
+
+        <Pressable style={styles.logoutButton}>
+          <Text style={styles.logoutText}>Log out</Text>
+          <Image
+            source={require("../../../assets/log-out-02 .png")}
+            style={styles.logoutIcon}
+            resizeMode="contain"
+          />
+        </Pressable>
+      </View>
+
       <ScrollView
-        contentContainerStyle={styles.content}
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.container}>
-          <Text style={styles.title}>Add word</Text>
-          <Text style={styles.description}>
-            Build a fresh card for your learning queue and keep the wording
-            consistent with your study plan.
-          </Text>
+        <Text style={styles.title}>Add word</Text>
 
-          <TextInput
-            placeholder="English word"
-            style={styles.input}
-            value={englishWord}
-            onChangeText={setEnglishWord}
-          />
-          <TextInput
-            placeholder="Translation"
-            style={styles.input}
-            value={turkishWord}
-            onChangeText={setTurkishWord}
-          />
+        <Text style={styles.description}>
+          Adding a new word to the dictionary is an important step in enriching
+          the language base and expanding the vocabulary.
+        </Text>
 
-          <Text style={styles.sectionTitle}>Category</Text>
-          <View style={styles.chipList}>
-            {dictionaryCategories.map((item) => {
-              const isActive = item.value === category;
+        <View style={styles.dropdownBlock}>
+          <Pressable
+            onPress={() => setIsCategoryOpen((current) => !current)}
+            style={styles.dropdownTrigger}
+          >
+            <Text style={styles.dropdownText}>{selectedCategoryLabel}</Text>
+            <Image
+              source={require("../../../assets/down-arrow.png")}
+              style={styles.dropdownIcon}
+              resizeMode="contain"
+            />
+          </Pressable>
 
-              return (
-                <Pressable
-                  key={item.value}
-                  onPress={() => setCategory(item.value)}
-                  style={[styles.chip, isActive && styles.chipActive]}
-                >
-                  <Text
-                    style={[styles.chipText, isActive && styles.chipTextActive]}
+          {isCategoryOpen ? (
+            <View style={styles.dropdownMenu}>
+              {dictionaryCategories.map((item) => {
+                const isActive = item.value === category;
+
+                return (
+                  <Pressable
+                    key={item.value}
+                    onPress={() => {
+                      setCategory(item.value);
+                      setIsCategoryOpen(false);
+                    }}
+                    style={[
+                      styles.dropdownOption,
+                      isActive && styles.dropdownOptionActive,
+                    ]}
                   >
-                    {item.label}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
-
-          {category === "verb" ? (
-            <>
-              <Text style={styles.sectionTitle}>Verb type</Text>
-              <View style={styles.radioList}>
-                {verbTypeOptions.map((item) => {
-                  const isActive = item.value === verbType;
-
-                  return (
-                    <Pressable
-                      key={item.value}
-                      onPress={() => setVerbType(item.value)}
-                      style={styles.radioRow}
+                    <Text
+                      style={[
+                        styles.dropdownOptionText,
+                        isActive && styles.dropdownOptionTextActive,
+                      ]}
                     >
-                      <View
-                        style={
-                          isActive
-                            ? styles.radioOuterActive
-                            : styles.radioOuter
-                        }
-                      >
-                        {isActive ? <View style={styles.radioInner} /> : null}
-                      </View>
-                      <Text style={styles.radioText}>{item.label}</Text>
-                    </Pressable>
-                  );
-                })}
-              </View>
-            </>
+                      {item.label}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
           ) : null}
-
-          <View style={styles.actions}>
-            <Pressable onPress={() => navigation.goBack()} style={styles.cancel}>
-              <Text style={styles.cancelText}>Cancel</Text>
-            </Pressable>
-            <Pressable onPress={handleSubmit} style={styles.submit}>
-              <Text style={styles.submitText}>Add</Text>
-            </Pressable>
-          </View>
         </View>
+
+        {category === "verb" ? (
+          <>
+            <View style={styles.radioList}>
+              {verbTypeOptions.map((item) => {
+                const isActive = item.value === verbType;
+
+                return (
+                  <Pressable
+                    key={item.value}
+                    onPress={() => setVerbType(item.value)}
+                    style={styles.radioRow}
+                  >
+                    <View
+                      style={
+                        isActive ? styles.radioOuterActive : styles.radioOuter
+                      }
+                    >
+                      {isActive ? <View style={styles.radioInner} /> : null}
+                    </View>
+                    <Text style={styles.radioText}>{item.label}</Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+
+            <Text style={styles.helperText}>
+              Such data must be entered in the format I form-II form-III form.
+            </Text>
+          </>
+        ) : null}
+
+        <View style={styles.languageRow}>
+          <View style={[styles.flagCircle, styles.turkishFlag]} />
+          <Text style={styles.languageText}>Turkish</Text>
+        </View>
+        <TextInput
+          placeholder="Enter translation"
+          placeholderTextColor={colors.textMuted}
+          style={styles.input}
+          value={translation}
+          onChangeText={setTranslation}
+        />
+
+        <View style={styles.languageRow}>
+          <Image
+            source={require("../../../assets/united kingdom.png")}
+            style={styles.ukFlag}
+            resizeMode="contain"
+          />
+          <Text style={styles.languageText}>English</Text>
+        </View>
+        <TextInput
+          placeholder="Enter English word"
+          placeholderTextColor={colors.textMuted}
+          style={styles.input}
+          value={englishWord}
+          onChangeText={setEnglishWord}
+        />
+
+        <Pressable onPress={handleSubmit} style={styles.addButton}>
+          <Text style={styles.addButtonText}>Add</Text>
+        </Pressable>
+
+        <Pressable
+          onPress={() => navigation.goBack()}
+          style={styles.cancelLink}
+        >
+          <Text style={styles.cancelText}>Cancel</Text>
+        </Pressable>
       </ScrollView>
     </SafeAreaView>
   );
@@ -130,68 +225,135 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
-  content: {
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.md,
+    backgroundColor: colors.white,
+    borderBottomWidth: 1,
+    borderBottomColor: "#EEF2F1",
+  },
+  backButton: {
+    width: 28,
+    alignItems: "flex-start",
+  },
+  backText: {
+    fontSize: 28,
+    lineHeight: 28,
+    color: colors.brand,
+    fontWeight: "300",
+  },
+  headerCenter: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  userIconWrapper: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: colors.brand,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 6,
+  },
+  userIcon: {
+    width: 18,
+    height: 18,
+    tintColor: colors.white,
+  },
+  userName: {
+    fontSize: 14,
+    color: colors.text,
+    fontWeight: "500",
+  },
+  logoutButton: {
+    width: 72,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
+  },
+  logoutText: {
+    fontSize: 14,
+    color: colors.brand,
+    marginRight: 4,
+  },
+  logoutIcon: {
+    width: 16,
+    height: 16,
+    tintColor: colors.brand,
+  },
+  scrollContent: {
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.lg,
     paddingBottom: spacing.xxl,
   },
-  container: {
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.lg,
-    gap: spacing.md,
-  },
   title: {
-    fontSize: 32,
+    fontSize: 36,
+    lineHeight: 40,
     fontWeight: "700",
     color: colors.text,
     marginBottom: spacing.md,
   },
   description: {
-    fontSize: 16,
-    lineHeight: 24,
+    fontSize: 18,
+    lineHeight: 26,
     color: colors.textMuted,
+    marginBottom: spacing.lg,
   },
-  input: {
+  dropdownBlock: {
+    marginBottom: spacing.sm,
+    zIndex: 2,
+  },
+  dropdownTrigger: {
     minHeight: 54,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 18,
-    backgroundColor: colors.white,
     paddingHorizontal: spacing.md,
-    color: colors.text,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: colors.text,
-    marginTop: spacing.sm,
-  },
-  chipList: {
+    backgroundColor: colors.white,
     flexDirection: "row",
-    flexWrap: "wrap",
-    gap: spacing.sm,
+    alignItems: "center",
+    justifyContent: "space-between",
   },
-  chip: {
+  dropdownText: {
+    color: colors.text,
+    fontSize: 20,
+    lineHeight: 24,
+  },
+  dropdownIcon: {
+    width: 16,
+    height: 16,
+  },
+  dropdownMenu: {
+    marginTop: spacing.xs,
+    borderRadius: 16,
+    overflow: "hidden",
+    backgroundColor: colors.white,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 999,
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    backgroundColor: colors.white,
   },
-  chipActive: {
-    backgroundColor: colors.brand,
-    borderColor: colors.brand,
+  dropdownOption: {
+    paddingVertical: 12,
+    paddingHorizontal: spacing.md,
   },
-  chipText: {
+  dropdownOptionActive: {
+    backgroundColor: "rgba(133, 170, 159, 0.12)",
+  },
+  dropdownOptionText: {
     color: colors.text,
-    fontSize: 14,
+    fontSize: 16,
   },
-  chipTextActive: {
-    color: colors.white,
+  dropdownOptionTextActive: {
+    color: colors.brand,
     fontWeight: "700",
   },
   radioList: {
     flexDirection: "row",
-    gap: spacing.lg,
+    gap: spacing.md,
+    marginTop: spacing.xs,
   },
   radioRow: {
     flexDirection: "row",
@@ -202,7 +364,7 @@ const styles = StyleSheet.create({
     height: 18,
     borderRadius: 9,
     borderWidth: 1.5,
-    borderColor: colors.border,
+    borderColor: colors.brand,
     marginRight: 8,
   },
   radioOuterActive: {
@@ -222,34 +384,72 @@ const styles = StyleSheet.create({
     backgroundColor: colors.brand,
   },
   radioText: {
-    color: colors.text,
+    color: colors.textMuted,
     fontSize: 14,
   },
-  actions: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    gap: spacing.sm,
-    marginTop: spacing.md,
+  helperText: {
+    fontSize: 12,
+    lineHeight: 16,
+    color: colors.textMuted,
+    marginTop: spacing.xs,
+    marginBottom: spacing.md,
   },
-  cancel: {
+  languageRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: spacing.md,
+    marginBottom: spacing.sm,
+  },
+  flagCircle: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    marginRight: spacing.sm,
+  },
+  turkishFlag: {
+    backgroundColor: "#D32F2F",
+  },
+  ukFlag: {
+    width: 26,
+    height: 26,
+    marginRight: spacing.sm,
+  },
+  languageText: {
+    fontSize: 18,
+    lineHeight: 24,
+    color: colors.textMuted,
+  },
+  input: {
+    minHeight: 56,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 999,
-    paddingVertical: 14,
-    paddingHorizontal: spacing.lg,
+    borderRadius: 18,
+    backgroundColor: colors.white,
+    paddingHorizontal: spacing.md,
+    color: colors.text,
+    fontSize: 18,
+  },
+  addButton: {
+    minHeight: 58,
+    borderRadius: 30,
+    backgroundColor: colors.brand,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: spacing.xl,
+  },
+  addButtonText: {
+    color: colors.white,
+    fontSize: 18,
+    fontWeight: "700",
+  },
+  cancelLink: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingTop: spacing.md,
   },
   cancelText: {
-    color: colors.text,
+    color: colors.textMuted,
+    fontSize: 18,
     fontWeight: "600",
-  },
-  submit: {
-    borderRadius: 999,
-    backgroundColor: colors.brand,
-    paddingVertical: 14,
-    paddingHorizontal: spacing.lg,
-  },
-  submitText: {
-    color: colors.white,
-    fontWeight: "700",
   },
 });

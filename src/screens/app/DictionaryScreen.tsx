@@ -1,5 +1,5 @@
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Alert, ScrollView, StyleSheet, View } from "react-native";
 import { useDispatch } from "react-redux";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -15,12 +15,13 @@ import { colors, spacing } from "../../constants/theme";
 import { mockDictionaryWords } from "../../data/mockWords";
 import type { DictionaryWord } from "../../data/mockWords";
 import type { BottomTabParamList } from "../../navigation/BottomTabNavigator";
-import { logout } from "../../store/authSlice";
+import { logoutThunk } from "../../store/authSlice";
 import type { VerbType, WordCategory } from "../../types/word";
+import type { AppDispatch } from "../../store/store";
 
 type Props = BottomTabScreenProps<BottomTabParamList, "Dictionary">;
 
-export default function DictionaryScreen({ navigation }: Props) {
+export default function DictionaryScreen({ navigation, route }: Props) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<WordCategory | null>(
@@ -30,11 +31,29 @@ export default function DictionaryScreen({ navigation }: Props) {
   const [currentPage, setCurrentPage] = useState(1);
   const [words, setWords] = useState(mockDictionaryWords);
   const [editingWord, setEditingWord] = useState<DictionaryWord | null>(null);
-  const dispatch = useDispatch();
+  useEffect(() => {
+    const newWord = route.params?.newWord;
+
+    if (!newWord) return;
+
+    setWords((currentWords) => {
+      const alreadyExists = currentWords.some((item) => item.id === newWord.id);
+
+      if (alreadyExists) {
+        return currentWords;
+      }
+
+      return [newWord, ...currentWords];
+    });
+
+    setCurrentPage(1);
+  }, [route.params?.newWord]);
+
+  const dispatch = useDispatch<AppDispatch>();
   const itemsPerPage = 3;
 
   const handleLogout = () => {
-    dispatch(logout());
+    dispatch(logoutThunk());
   };
 
   const handleAddWord = () => {
@@ -61,7 +80,10 @@ export default function DictionaryScreen({ navigation }: Props) {
     });
   }, [searchValue, selectedCategory, selectedVerbType, words]);
 
-  const totalPages = Math.max(1, Math.ceil(filteredWords.length / itemsPerPage));
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredWords.length / itemsPerPage),
+  );
   const paginatedWords = filteredWords.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage,
@@ -73,8 +95,22 @@ export default function DictionaryScreen({ navigation }: Props) {
   };
 
   const handleDelete = (wordId: string) => {
-    setWords((currentWords) => currentWords.filter((item) => item.id !== wordId));
-    setCurrentPage(1);
+    Alert.alert("Delete Word", "Are you sure you want to delete this word?", [
+      {
+        text: "Cancel",
+        style: "cancel",
+      },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: () => {
+          setWords((currentWords) =>
+            currentWords.filter((item) => item.id !== wordId),
+          );
+          setCurrentPage(1);
+        },
+      },
+    ]);
   };
 
   const handleSaveEdit = (payload: {

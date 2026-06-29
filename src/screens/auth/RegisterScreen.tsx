@@ -1,50 +1,82 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useState } from "react";
-
 import {
   Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
   View,
-  ScrollView,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
-import type { AuthStackParamList } from "../../navigation/AuthNavigator";
+import { Controller, useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+
 import { colors, spacing } from "../../constants/theme";
-import { useDispatch } from "react-redux";
-import { login } from "../../store/authSlice";
+import type { AuthStackParamList } from "../../navigation/AuthNavigator";
+import { registerThunk } from "../../store/authSlice";
+import type { AppDispatch, RootState } from "../../store/store";
+
+type RegisterFormData = {
+  name: string;
+  email: string;
+  password: string;
+};
 
 type Props = NativeStackScreenProps<AuthStackParamList, "Register">;
 
+const registerSchema = yup.object({
+  name: yup
+    .string()
+    .required("Name is required")
+    .min(2, "Name must be at least 2 characters"),
+  email: yup
+    .string()
+    .required("Email is required")
+    .email("Please enter a valid email address"),
+  password: yup
+    .string()
+    .required("Password is required")
+    .min(6, "Password must be at least 6 characters"),
+});
+
 export default function RegisterScreen({ navigation }: Props) {
   const [isPasswordHidden, setIsPasswordHidden] = useState(true);
-  const dispatch = useDispatch();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const dispatch = useDispatch<AppDispatch>();
+  const { isLoading, error } = useSelector((state: RootState) => state.auth);
 
-  const handleRegister = () => {
-    const trimmedName = name.trim();
-    const trimmedEmail = email.trim();
-    const trimmedPassword = password.trim();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegisterFormData>({
+    resolver: yupResolver(registerSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+    },
+  });
 
-    if (!trimmedName || !trimmedEmail || !trimmedPassword) {
-      Alert.alert("Error", "Please fill out all fields.");
-      return;
+  const handleRegister = async (formData: RegisterFormData) => {
+    try {
+      await dispatch(
+        registerThunk({
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          password: formData.password.trim(),
+        }),
+      ).unwrap();
+    } catch (submitError) {
+      Alert.alert("Register failed", String(submitError));
     }
-
-    if (!trimmedEmail.includes("@")) {
-      Alert.alert("Error", "Please enter a valid email address.");
-      return;
-    }
-
-    dispatch(login());
   };
 
   return (
@@ -73,57 +105,91 @@ export default function RegisterScreen({ navigation }: Props) {
                 form below. All fields are mandatory:
               </Text>
 
-              <TextInput
-                placeholder="Name"
-                style={styles.input}
-                autoCapitalize="words"
-                value={name}
-                onChangeText={setName}
-              />
-
-              <TextInput
-                placeholder="Email"
-                style={styles.input}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoCorrect={false}
-                value={email}
-                onChangeText={setEmail}
-              />
-
-              <View style={styles.passwordWrapper}>
-                <TextInput
-                  placeholder="Password"
-                  secureTextEntry={isPasswordHidden}
-                  style={styles.passwordInput}
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  value={password}
-                  onChangeText={setPassword}
-                />
-
-                <Pressable
-                  onPress={() => setIsPasswordHidden(!isPasswordHidden)}
-                >
-                  <Image
-                    source={
-                      isPasswordHidden
-                        ? require("../../../assets/eye-off.png")
-                        : require("../../../assets/eye.png")
-                    }
-                    style={styles.eyeIcon}
+              <Controller
+                control={control}
+                name="name"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <TextInput
+                    placeholder="Name"
+                    style={styles.input}
+                    autoCapitalize="words"
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
                   />
-                </Pressable>
-              </View>
+                )}
+              />
+              {errors.name ? (
+                <Text style={styles.errorText}>{errors.name.message}</Text>
+              ) : null}
+
+              <Controller
+                control={control}
+                name="email"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <TextInput
+                    placeholder="Email"
+                    style={styles.input}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                  />
+                )}
+              />
+              {errors.email ? (
+                <Text style={styles.errorText}>{errors.email.message}</Text>
+              ) : null}
+
+              <Controller
+                control={control}
+                name="password"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <View style={styles.passwordWrapper}>
+                    <TextInput
+                      placeholder="Password"
+                      secureTextEntry={isPasswordHidden}
+                      style={styles.passwordInput}
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      value={value}
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                    />
+
+                    <Pressable
+                      onPress={() => setIsPasswordHidden(!isPasswordHidden)}
+                    >
+                      <Image
+                        source={
+                          isPasswordHidden
+                            ? require("../../../assets/eye-off.png")
+                            : require("../../../assets/eye.png")
+                        }
+                        style={styles.eyeIcon}
+                      />
+                    </Pressable>
+                  </View>
+                )}
+              />
+              {errors.password ? (
+                <Text style={styles.errorText}>{errors.password.message}</Text>
+              ) : null}
+
+              {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
               <Pressable
                 style={({ pressed }) => [
                   styles.primaryButton,
                   pressed && { opacity: 0.8 },
                 ]}
-                onPress={handleRegister}
+                onPress={handleSubmit(handleRegister)}
               >
-                <Text style={styles.primaryButtonText}>Register</Text>
+                <Text style={styles.primaryButtonText}>
+                  {isLoading ? "Loading..." : "Register"}
+                </Text>
               </Pressable>
 
               <Pressable onPress={() => navigation.navigate("Login")}>
@@ -138,6 +204,11 @@ export default function RegisterScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
+  errorText: {
+    color: "#D80027",
+    fontSize: 14,
+    marginBottom: spacing.sm,
+  },
   safeArea: {
     flex: 1,
     backgroundColor: colors.background,

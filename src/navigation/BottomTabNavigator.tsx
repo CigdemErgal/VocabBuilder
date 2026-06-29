@@ -3,9 +3,25 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import DictionaryScreen from "../screens/app/DictionaryScreen";
 import RecommendScreen from "../screens/app/RecommendScreen";
 import TrainingScreen from "../screens/app/TrainingScreen";
-import AddWordScreen from "../screens/app/AddWordScreen";
+
+import { VerbType, WordCategory } from "../types/word";
+
 export type BottomTabParamList = {
-  Dictionary: undefined;
+  Dictionary:
+    | {
+        newWord?: {
+          id: string;
+          word: string;
+          translation: string;
+          ua: string;
+          category: WordCategory;
+          verbType?: VerbType;
+          progress: number;
+          nextReview: string;
+        };
+      }
+    | undefined;
+
   Recommend: undefined;
   Training: undefined;
   AddWord: undefined;

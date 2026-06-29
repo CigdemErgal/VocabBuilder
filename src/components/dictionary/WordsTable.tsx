@@ -115,7 +115,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: 15,
-    overflow: "hidden",
     backgroundColor: colors.white,
   },
   headerRow: {
@@ -129,7 +128,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
     alignItems: "center",
-    overflow: "visible",
   },
   headerCell: {
     fontSize: 13,
@@ -168,7 +166,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 6,
-    overflow: "visible",
   },
   menuTrigger: {
     minWidth: 24,
@@ -183,8 +180,8 @@ const styles = StyleSheet.create({
   },
   popupMenu: {
     position: "absolute",
-    top: 36,
-    right: 0,
+    right: 4,
+    bottom: 28,
     minWidth: 88,
     borderRadius: 14,
     backgroundColor: colors.white,
