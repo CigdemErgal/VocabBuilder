@@ -650,3 +650,50 @@ Buradan sonra adim adim bu dosyaya gore ilerleyecegiz.
 2. `LoginScreen` ve `RegisterScreen` icinde `dispatch(login())` yerine gercek thunk cagirilari baglamak
 3. Token saklama ve `current user` akisini eklemek
 4. Sonrasinda word endpointlerini backend ile baglamaya baslamak
+
+## 16. Gunluk Not - 29 Haziran 2026
+
+### Bugun tamamlananlar
+
+- `expo-secure-store` ile token saklama yardimcilari netlestirildi ve auth akisina baglandi.
+- `authSlice` tarafinda `registerThunk`, `loginThunk`, `logoutThunk` ve `restoreSessionThunk` akisi kuruldu.
+- Uygulama acilisinda oturumu geri yukleme mantigi eklendi.
+- `RootNavigator` icinde oturum geri yuklenirken bekleme durumu eklendi.
+- `LoginScreen` ve `RegisterScreen` tarafinda backend hata mesajlarini ekranda gosterme akisi iyilestirildi.
+- `DictionaryScreen` icinde kelime arama, kategori filtreleme ve `verb` icin `regular / irregular` filtre davranisi calisir hale getirildi.
+- `AddWordScreen` ayri ekran mantigiyla netlestirildi ve dictionary ekranina yeni kelime geri gonderme akisi baglandi.
+- `DictionaryScreen` icinde yeni eklenen kelimeyi `route.params` uzerinden listeye ekleme mantigi calisir hale getirildi.
+- `EditWordModal` ile kelime guncelleme akisi calisir hale getirildi.
+- Dictionary tablosunda `Delete` icin onayli silme akisi eklendi.
+- `WordsTable` icindeki `...` popup menunun tablo tarafindan kesilme sorunu cozuldu.
+- Dictionary tablosu, pagination ve alt tab footer gorunumu Figma'ya daha yakin hale getirildi.
+- `BottomTabNavigator` icinde footer arka plan rengi, ikonlar ve label stilleri duzenlendi.
+- `WordsPagination` gorunumu Figma'daki daha kompakt yapıya yaklastirildi.
+- `RecommendScreen` kart yapisindan cikarilip Figma'daki filtre + tablo mantigina yaklastirilmaya baslandi.
+- `RecommendScreen` icine header, search, category ve `verb` seciminde radio alanini gosteren ust blok eklendi.
+- `RecommendScreen` icine `To study` ve `Train oneself` satirlari eklendi.
+
+### Bugun netlesen kararlar
+
+- Figma'da yan yana gorunen bircok mobil kart ayri ekran degil, ayni ekranin farkli state gorunumleri olarak ele alinacak.
+- `Add word` icin beyaz tam ekran kullanilacak; yesil popup varyanti create degil farkli bir tasarim state'i olarak yorumlanacak.
+- `RecommendScreen` ayri bir kart listesi olarak degil, `DictionaryScreen` benzeri filtre + tablo duzeniyle ilerleyecek.
+- `Recommend` ekraninda kategori `verb` oldugunda `Regular / Irregular` radio alani gosterilecek.
+- Footer ve alt safe area goruntusunde emulator overlay ile uygulama UI'i birbirinden ayri degerlendirilecek.
+
+### Halen devam eden / tamamlanmayan kisimlar
+
+- `RecommendScreen` tablosu henuz son Figma haline tam ulasmadi.
+- `RecommendScreen` tarafinda gercek filtrelenmis veri mantigi henuz tamamlanmadi.
+- `Recommend` tablosundaki sag ok davranisi ve olasi `Add to dictionary` akisinin backend/state baglantisi henuz yok.
+- `TrainingScreen` halen ilk baslangic haline yakin; Figma'daki kart yapisi, bos durum ve sonuc akisi tamamlanmadi.
+- `WellDoneScreen` henuz yapilmadi.
+- Word endpointleri halen mock veri yerine gercek backend ile tamamen baglanmadi.
+
+### Yarin ilk mantikli adimlar
+
+1. `RecommendScreen` icindeki veriyi `search + category + verb type` ile gercekten filtrelemek
+2. `RecommendScreen` tablosunu Figma'daki son kolon ve satir davranisina gore toparlamak
+3. `Recommend` icin `Add to dictionary` akisini netlestirmek
+4. Sonrasinda `TrainingScreen` ust yapisini Figma'ya yaklastirmaya baslamak
+5. `Training` bos durum, soru alani ve `Save / Cancel` akisini parcalara ayirmak
