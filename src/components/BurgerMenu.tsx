@@ -1,6 +1,8 @@
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { useSelector } from "react-redux";
 
 import { colors, spacing } from "../constants/theme";
+import type { RootState } from "../store/store";
 
 type BurgerMenuProps = {
   onClose: () => void;
@@ -17,11 +19,15 @@ export default function BurgerMenu({
   onTrainingPress,
   onLogoutPress,
 }: BurgerMenuProps) {
+  const userName = useSelector(
+    (state: RootState) => state.auth.user?.name ?? "User",
+  );
+
   return (
     <View style={styles.container}>
       <View style={styles.topRow}>
         <View style={styles.userRow}>
-          <Text style={styles.userName}>Iryna</Text>
+          <Text style={styles.userName}>{userName}</Text>
 
           <View style={styles.userIconWrapper}>
             <Image

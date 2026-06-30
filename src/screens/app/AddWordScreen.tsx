@@ -10,16 +10,24 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { colors, spacing } from "../../constants/theme";
 import { dictionaryCategories, verbTypeOptions } from "../../data/mockWords";
 import type { HomeParamList } from "../../navigation/HomeNavigator";
+import { createWordThunk } from "../../store/wordsSlice";
+import type { AppDispatch, RootState } from "../../store/store";
 import type { VerbType, WordCategory } from "../../types/word";
 
 type Props = NativeStackScreenProps<HomeParamList, "AddWord">;
 
 export default function AddWordScreen({ navigation }: Props) {
+  const dispatch = useDispatch<AppDispatch>();
+  const userName = useSelector(
+    (state: RootState) => state.auth.user?.name ?? "User",
+  );
+
   const [englishWord, setEnglishWord] = useState("");
   const [translation, setTranslation] = useState("");
   const [category, setCategory] = useState<WordCategory>("verb");
@@ -33,29 +41,27 @@ export default function AddWordScreen({ navigation }: Props) {
     );
   }, [category]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!englishWord.trim() || !translation.trim()) {
       Alert.alert("Missing info", "Please fill in both word fields.");
       return;
     }
-    const newWord = {
-      id: Date.now().toString(),
-      word: englishWord.trim(),
-      translation: translation.trim(),
-      ua: translation.trim(),
-      category,
-      verbType: category === "verb" ? verbType : undefined,
-      progress: 0,
-      nextReview: "Today",
-    };
 
-    Alert.alert("Added", "The word has been added to your dictionary.");
-    navigation.navigate("HomeTabs", {
-      screen: "Dictionary",
-      params: {
-        newWord,
-      },
-    } as never);
+    try {
+      await dispatch(
+        createWordThunk({
+          word: englishWord,
+          ua: translation,
+          category,
+          verbType: category === "verb" ? verbType : undefined,
+        }),
+      ).unwrap();
+
+      Alert.alert("Added", "The word has been added to your dictionary.");
+      navigation.goBack();
+    } catch (error) {
+      Alert.alert("Add word failed", String(error));
+    }
   };
 
   return (
@@ -76,7 +82,7 @@ export default function AddWordScreen({ navigation }: Props) {
               resizeMode="contain"
             />
           </View>
-          <Text style={styles.userName}>Iryna</Text>
+          <Text style={styles.userName}>{userName}</Text>
         </View>
 
         <Pressable style={styles.logoutButton}>
@@ -178,11 +184,11 @@ export default function AddWordScreen({ navigation }: Props) {
         ) : null}
 
         <View style={styles.languageRow}>
-          <View style={[styles.flagCircle, styles.turkishFlag]} />
-          <Text style={styles.languageText}>Turkish</Text>
+          <View style={[styles.flagCircle, styles.ukrainianFlag]} />
+          <Text style={styles.languageText}>Ukrainian</Text>
         </View>
         <TextInput
-          placeholder="Enter translation"
+          placeholder="Enter Ukrainian translation"
           placeholderTextColor={colors.textMuted}
           style={styles.input}
           value={translation}
@@ -406,8 +412,8 @@ const styles = StyleSheet.create({
     borderRadius: 13,
     marginRight: spacing.sm,
   },
-  turkishFlag: {
-    backgroundColor: "#D32F2F",
+  ukrainianFlag: {
+    backgroundColor: "#2F80ED",
   },
   ukFlag: {
     width: 26,

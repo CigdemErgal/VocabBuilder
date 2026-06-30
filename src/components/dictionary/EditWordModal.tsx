@@ -2,7 +2,7 @@ import { Modal, Pressable, StyleSheet, Text, TextInput, View } from "react-nativ
 import { useEffect, useState } from "react";
 
 import { colors, spacing } from "../../constants/theme";
-import type { DictionaryWord } from "../../data/mockWords";
+import type { DictionaryWord } from "../../store/wordMapper";
 
 type EditWordModalProps = {
   visible: boolean;

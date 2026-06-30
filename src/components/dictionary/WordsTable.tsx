@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { colors } from "../../constants/theme";
-import type { DictionaryWord } from "../../data/mockWords";
+import type { DictionaryWord } from "../../store/wordMapper";
 import ProgressCircle from "./ProgressCircle";
 
 type WordsTableProps = {

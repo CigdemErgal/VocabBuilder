@@ -1,7 +1,8 @@
+import { useIsFocused } from "@react-navigation/native";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { useEffect, useMemo, useState } from "react";
-import { Alert, ScrollView, StyleSheet, View } from "react-native";
-import { useDispatch } from "react-redux";
+import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import BurgerMenu from "../../components/BurgerMenu";
@@ -12,16 +13,41 @@ import EditWordModal from "../../components/dictionary/EditWordModal";
 import WordsPagination from "../../components/dictionary/WordsPagination";
 import WordsTable from "../../components/dictionary/WordsTable";
 import { colors, spacing } from "../../constants/theme";
-import { mockDictionaryWords } from "../../data/mockWords";
-import type { DictionaryWord } from "../../data/mockWords";
 import type { BottomTabParamList } from "../../navigation/BottomTabNavigator";
 import { logoutThunk } from "../../store/authSlice";
+import {
+  fetchCategoriesThunk,
+  fetchDictionaryWordsThunk,
+  fetchStatisticsThunk,
+  selectDictionaryWords,
+  selectWordCategories,
+  selectWordStatisticsCount,
+  selectWordsError,
+} from "../../store/wordsSlice";
+import type { AppDispatch, RootState } from "../../store/store";
 import type { VerbType, WordCategory } from "../../types/word";
-import type { AppDispatch } from "../../store/store";
+import type { DictionaryWord } from "../../store/wordMapper";
 
 type Props = BottomTabScreenProps<BottomTabParamList, "Dictionary">;
 
-export default function DictionaryScreen({ navigation, route }: Props) {
+export default function DictionaryScreen({ navigation }: Props) {
+  const dispatch = useDispatch<AppDispatch>();
+  const isFocused = useIsFocused();
+
+  const words = useSelector(selectDictionaryWords);
+  const categories = useSelector(selectWordCategories);
+  const statisticsCount = useSelector(selectWordStatisticsCount);
+  const paginationCurrentPage = useSelector(
+    (state: RootState) => state.words.currentPage,
+  );
+  const paginationTotalPages = useSelector(
+    (state: RootState) => state.words.totalPages,
+  );
+  const isLoadingWords = useSelector(
+    (state: RootState) => state.words.isLoadingWords,
+  );
+  const error = useSelector(selectWordsError);
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<WordCategory | null>(
@@ -29,28 +55,51 @@ export default function DictionaryScreen({ navigation, route }: Props) {
   );
   const [selectedVerbType, setSelectedVerbType] = useState<VerbType>("regular");
   const [currentPage, setCurrentPage] = useState(1);
-  const [words, setWords] = useState(mockDictionaryWords);
   const [editingWord, setEditingWord] = useState<DictionaryWord | null>(null);
+
+  const categoryOptions = useMemo(
+    () =>
+      categories.map((item) => ({
+        value: item,
+        label: item
+          .split(" ")
+          .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+          .join(" "),
+      })),
+    [categories],
+  );
+
   useEffect(() => {
-    const newWord = route.params?.newWord;
+    if (!isFocused) {
+      return;
+    }
 
-    if (!newWord) return;
+    dispatch(fetchCategoriesThunk());
+    dispatch(fetchStatisticsThunk());
+  }, [dispatch, isFocused]);
 
-    setWords((currentWords) => {
-      const alreadyExists = currentWords.some((item) => item.id === newWord.id);
+  useEffect(() => {
+    if (!isFocused) {
+      return;
+    }
 
-      if (alreadyExists) {
-        return currentWords;
-      }
-
-      return [newWord, ...currentWords];
-    });
-
-    setCurrentPage(1);
-  }, [route.params?.newWord]);
-
-  const dispatch = useDispatch<AppDispatch>();
-  const itemsPerPage = 3;
+    dispatch(
+      fetchDictionaryWordsThunk({
+        keyword: searchValue,
+        category: selectedCategory,
+        verbType: selectedVerbType,
+        page: currentPage,
+        limit: 7,
+      }),
+    );
+  }, [
+    currentPage,
+    dispatch,
+    isFocused,
+    searchValue,
+    selectedCategory,
+    selectedVerbType,
+  ]);
 
   const handleLogout = () => {
     dispatch(logoutThunk());
@@ -64,84 +113,28 @@ export default function DictionaryScreen({ navigation, route }: Props) {
     navigation.navigate("Training");
   };
 
-  const filteredWords = useMemo(() => {
-    return words.filter((item) => {
-      const query = searchValue.trim().toLowerCase();
-      const matchesSearch =
-        query.length === 0 ||
-        item.word.toLowerCase().includes(query) ||
-        item.translation.toLowerCase().includes(query);
-      const matchesCategory =
-        selectedCategory === null || item.category === selectedCategory;
-      const matchesVerbType =
-        selectedCategory !== "verb" || item.verbType === selectedVerbType;
-
-      return matchesSearch && matchesCategory && matchesVerbType;
-    });
-  }, [searchValue, selectedCategory, selectedVerbType, words]);
-
-  const totalPages = Math.max(
-    1,
-    Math.ceil(filteredWords.length / itemsPerPage),
-  );
-  const paginatedWords = filteredWords.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage,
-  );
-
   const handleCategoryChange = (value: WordCategory | null) => {
     setSelectedCategory(value);
     setCurrentPage(1);
   };
 
-  const handleDelete = (wordId: string) => {
-    Alert.alert("Delete Word", "Are you sure you want to delete this word?", [
-      {
-        text: "Cancel",
-        style: "cancel",
-      },
-      {
-        text: "Delete",
-        style: "destructive",
-        onPress: () => {
-          setWords((currentWords) =>
-            currentWords.filter((item) => item.id !== wordId),
-          );
-          setCurrentPage(1);
-        },
-      },
-    ]);
+  const handleDelete = (_wordId: string) => {
+    Alert.alert("Delete is not connected yet");
   };
 
-  const handleSaveEdit = (payload: {
+  const handleSaveEdit = (_payload: {
     id: string;
     word: string;
     translation: string;
   }) => {
-    if (!payload.word || !payload.translation) {
-      Alert.alert("Missing info", "Please fill in both fields before saving.");
-      return;
-    }
-
-    setWords((currentWords) =>
-      currentWords.map((item) =>
-        item.id === payload.id
-          ? {
-              ...item,
-              word: payload.word,
-              translation: payload.translation,
-              ua: payload.translation,
-            }
-          : item,
-      ),
-    );
+    Alert.alert("Edit is not connected yet");
     setEditingWord(null);
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        <DictionaryHeader onMenuPress={() => setIsMenuOpen(!isMenuOpen)} />
+        <DictionaryHeader onMenuPress={() => setIsMenuOpen((prev) => !prev)} />
 
         {isMenuOpen ? (
           <BurgerMenu
@@ -168,6 +161,7 @@ export default function DictionaryScreen({ navigation, route }: Props) {
           showsVerticalScrollIndicator={false}
         >
           <DictionaryFilters
+            categories={categoryOptions}
             searchValue={searchValue}
             selectedCategory={selectedCategory}
             selectedVerbType={selectedVerbType}
@@ -176,24 +170,33 @@ export default function DictionaryScreen({ navigation, route }: Props) {
               setCurrentPage(1);
             }}
             onCategoryChange={handleCategoryChange}
-            onVerbTypeChange={setSelectedVerbType}
+            onVerbTypeChange={(value) => {
+              setSelectedVerbType(value);
+              setCurrentPage(1);
+            }}
           />
 
           <DictionaryActions
-            studyCount={filteredWords.length}
+            studyCount={statisticsCount}
             onAddWordPress={handleAddWord}
             onTrainPress={handleTrain}
           />
 
+          {isLoadingWords ? (
+            <Text style={styles.infoText}>Loading words...</Text>
+          ) : null}
+
+          {error ? <Text style={styles.errorText}>{error}</Text> : null}
+
           <WordsTable
-            words={paginatedWords}
+            words={words}
             onEdit={setEditingWord}
             onDelete={handleDelete}
           />
 
           <WordsPagination
-            currentPage={currentPage}
-            totalPages={totalPages}
+            currentPage={paginationCurrentPage}
+            totalPages={paginationTotalPages}
             onPageChange={setCurrentPage}
           />
         </ScrollView>
@@ -224,5 +227,15 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     paddingBottom: spacing.xxl,
+  },
+  infoText: {
+    marginTop: spacing.md,
+    color: colors.textMuted,
+    fontSize: 14,
+  },
+  errorText: {
+    marginTop: spacing.md,
+    color: colors.danger,
+    fontSize: 14,
   },
 });

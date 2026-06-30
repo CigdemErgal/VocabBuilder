@@ -9,10 +9,15 @@ import {
 } from "react-native";
 
 import { colors, spacing } from "../../constants/theme";
-import { dictionaryCategories, verbTypeOptions } from "../../data/mockWords";
 import type { VerbType, WordCategory } from "../../types/word";
 
+type CategoryOption = {
+  label: string;
+  value: WordCategory;
+};
+
 type DictionaryFiltersProps = {
+  categories: CategoryOption[];
   searchValue: string;
   selectedCategory: WordCategory | null;
   selectedVerbType: VerbType;
@@ -21,7 +26,13 @@ type DictionaryFiltersProps = {
   onVerbTypeChange: (value: VerbType) => void;
 };
 
+const verbTypeOptions: Array<{ label: string; value: VerbType }> = [
+  { label: "Regular", value: "regular" },
+  { label: "Irregular", value: "irregular" },
+];
+
 export default function DictionaryFilters({
+  categories = [],
   searchValue,
   selectedCategory,
   selectedVerbType,
@@ -32,8 +43,8 @@ export default function DictionaryFilters({
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
 
   const selectedLabel =
-    dictionaryCategories.find((item) => item.value === selectedCategory)
-      ?.label ?? "Categories";
+    categories.find((item) => item.value === selectedCategory)?.label ??
+    "Categories";
 
   const isVerbSelected = selectedCategory === "verb";
 
@@ -68,7 +79,7 @@ export default function DictionaryFilters({
 
       {isCategoryOpen && (
         <View style={styles.dropdown}>
-          {dictionaryCategories.map((item) => {
+          {categories.map((item) => {
             const isActive = item.value === selectedCategory;
 
             return (

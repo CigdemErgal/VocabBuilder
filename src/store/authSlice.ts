@@ -4,6 +4,21 @@ import { signIn, signUp, signOut, getCurrentUser } from "../api/auth";
 import { setAuthHeader, clearAuthHeader } from "../api/client";
 import { saveToken, deleteToken, getToken } from "../utils/secureStore";
 
+type AuthUser = {
+  name: string;
+  email: string;
+};
+
+function mapAuthUser(data: {
+  name: string;
+  email: string;
+}): AuthUser {
+  return {
+    name: data.name,
+    email: data.email,
+  };
+}
+
 function getErrorMessage(error: unknown, fallbackMessage: string) {
   if (axios.isAxiosError(error)) {
     const responseMessage = error.response?.data?.message;
@@ -92,10 +107,7 @@ export const restoreSessionThunk = createAsyncThunk(
   },
 );
 type AuthState = {
-  user: {
-    name: string;
-    email: string;
-  } | null;
+  user: AuthUser | null;
   token: string | null;
   isAuth: boolean;
   isLoading: boolean;
@@ -126,7 +138,7 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.isAuth = true;
         state.token = action.payload.token;
-        state.user = action.payload.user;
+        state.user = mapAuthUser(action.payload);
       })
       .addCase(registerThunk.rejected, (state, action) => {
         state.isLoading = false;
@@ -140,7 +152,7 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.isAuth = true;
         state.token = action.payload.token;
-        state.user = action.payload.user;
+        state.user = mapAuthUser(action.payload);
       })
       .addCase(loginThunk.rejected, (state, action) => {
         state.isLoading = false;
@@ -172,7 +184,7 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.isAuth = true;
         state.token = action.payload.token;
-        state.user = action.payload.user;
+        state.user = mapAuthUser(action.payload.user);
         state.error = null;
       })
       .addCase(restoreSessionThunk.rejected, (state, action) => {

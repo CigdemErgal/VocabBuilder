@@ -1,6 +1,8 @@
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { useSelector } from "react-redux";
 
 import { colors, spacing } from "../../constants/theme";
+import type { RootState } from "../../store/store";
 
 type DictionaryHeaderProps = {
   onMenuPress: () => void;
@@ -9,6 +11,10 @@ type DictionaryHeaderProps = {
 export default function DictionaryHeader({
   onMenuPress,
 }: DictionaryHeaderProps) {
+  const userName = useSelector(
+    (state: RootState) => state.auth.user?.name ?? "User",
+  );
+
   return (
     <View style={styles.header}>
       <View style={styles.logoRow}>
@@ -21,7 +27,7 @@ export default function DictionaryHeader({
       </View>
 
       <View style={styles.headerRight}>
-        <Text style={styles.userName}>Iryna</Text>
+        <Text style={styles.userName}>{userName}</Text>
 
         <View style={styles.userIconWrapper}>
           <Image

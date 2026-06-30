@@ -1,11 +1,11 @@
 import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import DictionaryFilters from "../../components/dictionary/DictionaryFilters";
 import DictionaryHeader from "../../components/dictionary/DictionaryHeader";
 import type { VerbType, WordCategory } from "../../types/word";
 import { colors, spacing } from "../../constants/theme";
-import { mockRecommendedWords } from "../../data/mockWords";
+import { dictionaryCategories, mockRecommendedWords } from "../../data/mockWords";
 
 export default function RecommendScreen() {
   const [searchValue, setSearchValue] = useState("");
@@ -13,6 +13,15 @@ export default function RecommendScreen() {
     "verb",
   );
   const [selectedVerbType, setSelectedVerbType] = useState<VerbType>("regular");
+
+  const categoryOptions = useMemo(
+    () =>
+      dictionaryCategories.map((item) => ({
+        value: item.value,
+        label: item.label,
+      })),
+    [],
+  );
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -23,6 +32,7 @@ export default function RecommendScreen() {
         <DictionaryHeader onMenuPress={() => {}} />
 
         <DictionaryFilters
+          categories={categoryOptions}
           searchValue={searchValue}
           selectedCategory={selectedCategory}
           selectedVerbType={selectedVerbType}
